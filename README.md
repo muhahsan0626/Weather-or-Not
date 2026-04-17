@@ -1,93 +1,119 @@
 # Weather or Not
 
+Weather or Not is a Flutter mobile app that helps users decide what to wear by generating weather-aware outfit suggestions from their own wardrobe.
 
+Instead of making clothing decisions from scratch every morning, users can store wardrobe items, set personal temperature comfort preferences, and get outfit recommendations tailored to both weather conditions and planned activities.
 
-## Getting started
+## Why This App Exists
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Daily outfit selection is a small but recurring problem:
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- It consumes time when people are in a rush.
+- It is easy to underdress or overdress when weather changes quickly.
+- Plans for the day (commute, casual meeting, outdoor activity) are often ignored.
 
-## Add your files
+Weather or Not solves this by combining personal wardrobe data, forecast data, and activity context into a practical recommendation engine.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Core Features
 
+- Weather-based outfit recommendations from a personal wardrobe
+- Personalized temperature comfort thresholds (cold/warm perception)
+- Wardrobe management: add, edit, delete, search, and favorite items
+- Clothing metadata support: categories, subcategories, attributes, style tags, formality, colors
+- Monthly planner with activities that influence recommendations
+- Saved outfits for quick reuse
+- In-wash item status to temporarily exclude clothes
+- Reroll/refresh suggestions for more variety
+- Location picker with current-location support and weather-station fallback logic
+
+## How Recommendations Are Generated
+
+The suggestion engine uses a point-based scoring approach with hard constraints:
+
+1. Filter candidates by hard weather boundaries (temperature, rain, wind).
+2. Score remaining items by activity fit, formality, style compatibility, and color harmony.
+3. Respect practical constraints such as commuting and daily context.
+4. Inject controlled randomness to avoid repeating the exact same outfit too often.
+
+This creates suggestions that are both sensible and varied.
+
+## Technical Highlights
+
+- Built with Flutter and Dart using provider-based state management
+- Integrates weather data via DWD-related endpoints and station metadata
+- Handles real-world API inconsistency with fallback station search by radius
+- Uses interpolation logic to estimate "live" conditions when stations are incomplete
+- Persists user preferences, wardrobe data, and planner information locally
+
+## Engineering Challenges And Solutions
+
+- Incomplete weather station data:
+  Introduced nearest-station fallback and weather interpolation strategies to keep recommendations available.
+
+- Planner and home-screen synchronization issues:
+  Refined state flow and update triggers so planned activities reliably affect daily suggestions.
+
+- Repetitive outfit outputs:
+  Added controlled randomness to increase diversity while preserving relevance.
+
+- Activities not influencing suggestions strongly enough:
+  Rebalanced algorithm weighting and constraints so activities materially change outcomes.
+
+- Temperature mismatches (e.g., heavy layers when warm):
+  Added stricter weather constraints to prevent impractical recommendations.
+
+- UI complexity in selection dialogs:
+  Improved information architecture with grouping and search for faster item/activity selection.
+
+- State race conditions causing instability:
+  Improved provider update ordering and defensive checks to prevent crashes and inconsistent state.
+
+## Tech Stack
+
+- Framework: Flutter
+- Language: Dart
+- State management: provider
+- Networking: http
+- Local persistence: shared_preferences, file storage via path_provider
+- Device capabilities: geolocator, image_picker
+- Date and planning UI: intl, table_calendar
+
+## Project Structure
+
+The codebase is organized by responsibility:
+
+- `lib/models`: Domain models for weather, outfits, wardrobe items, planner entries
+- `lib/services`: Weather integration, storage, planner logic, outfit generation
+- `lib/providers`: App-level state orchestration
+- `lib/screens`: User-facing screens (home, wardrobe, planner, settings, details)
+- `lib/widgets`: Reusable UI components
+
+## Getting Started
+
+### Prerequisites
+
+- Flutter SDK (stable channel)
+- Dart SDK (installed with Flutter)
+- Android Studio or Xcode for device/emulator builds
+
+### Run Locally
+
+```bash
+flutter pub get
+flutter run
 ```
-cd existing_repo
-git remote add origin https://gitlab.informatik.uni-bremen.de/mad-ws25/weather-or-not.git
-git branch -M main
-git push -uf origin main
-```
 
-## Integrate with your tools
+## Current Status
 
-- [ ] [Set up project integrations](https://gitlab.informatik.uni-bremen.de/mad-ws25/weather-or-not/-/settings/integrations)
+The app is functionally complete and demonstrates:
 
-## Collaborate with your team
+- End-to-end weather-aware recommendation logic
+- Robust handling of imperfect external weather data
+- Practical wardrobe and planner workflows for day-to-day use
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+## Future Improvements
 
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Weather or Not
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+- Cloud sync for wardrobe and planner data
+- Better explainability for recommendations ("why this outfit")
+- Expanded style intelligence with stronger personalization over time
+- Push notifications for significant weather changes
